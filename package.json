@@ -5,15 +5,17 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "tauri:dev": "npm run tauri dev",
+    "tauri:build": "npm run tauri build",
+    "build": "echo \"No build step needed.\""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^2.2.0",
     "ejs": "^3.1.10",
-    "express": "^5.1.0",
-    "laboratory-classes-6": "file:"
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
