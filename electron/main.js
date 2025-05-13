@@ -1,5 +1,6 @@
 const { app, BrowserWindow } = require('electron');
 const waitOn = require('wait-on');
+const { exec } = require('child_process');
 
 let win;
 
@@ -12,34 +13,37 @@ function createWindow() {
       contextIsolation: false
     }
   });
-
-  // Ładujemy stronę dopiero po tym, jak serwer Express będzie dostępny
   win.loadURL('http://localhost:3000');
 }
 
 app.whenReady().then(() => {
-  // Oczekiwanie na dostępność serwera na porcie 3000
+  const serverProcess = exec('npm run start', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Błąd uruchomienia serwera: ${error}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });
+
   waitOn({
     resources: ['http://localhost:3000'],
-    timeout: 30000, // Czas oczekiwania na serwer (np. 30 sekund)
+    timeout: 30000,
   })
     .then(() => {
-      createWindow(); // Po uzyskaniu dostępu do serwera, otwórz okno Electron
+      createWindow();
     })
     .catch((error) => {
       console.error('Błąd oczekiwania na serwer:', error);
-      app.quit(); // Zakończ aplikację, jeśli nie uda się połączyć z serwerem
+      app.quit();
     });
-});
 
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
 });
